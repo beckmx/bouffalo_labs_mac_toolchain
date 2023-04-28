@@ -17,39 +17,51 @@ The toolchain is at least 80% of the work, but you also need to patch the SDK wi
 
 ### Patch project.build
 Open the file "project.build" from the sdk and look for this code
-`
-ifeq ($(OS),Windows_NT)
-CMAKE = $(BL_SDK_BASE)/tools/cmake/bin/cmake.exe
-BL_FLASH_PROGRAM = ${BL_SDK_BASE}/tools/bflb_tools/bouffalo_flash_cube/BLFlashCommand.exe
-cmake_generator = "MinGW Makefiles"
-else
-	ifeq ($(shell uname),Darwin)
-	CMAKE = cmake # use user cmake
-	BL_FLASH_PROGRAM = ${BL_SDK_BASE}/tools/bflb_tools/bouffalo_flash_cube/BLFlashCommand-macos
-	cmake_generator = "Unix Makefiles"
-	else
-	CMAKE = $(BL_SDK_BASE)/tools/cmake/bin/cmake
-	BL_FLASH_PROGRAM = ${BL_SDK_BASE}/tools/bflb_tools/bouffalo_flash_cube/BLFlashCommand-ubuntu
-	cmake_generator = "Unix Makefiles"
-	endif
-    `
+
+    <?php
+        ifeq ($(OS),Windows_NT)
+        CMAKE = $(BL_SDK_BASE)/tools/cmake/bin/cmake.exe
+        BL_FLASH_PROGRAM = ${BL_SDK_BASE}/tools/bflb_tools/bouffalo_flash_cube/BLFlashCommand.exe
+        cmake_generator = "MinGW Makefiles"
+        else
+    	ifeq ($(shell uname),Darwin)
+    	CMAKE = cmake # use user cmake
+    	BL_FLASH_PROGRAM = ${BL_SDK_BASE}/tools/bflb_tools/bouffalo_flash_cube/BLFlashCommand-macos
+    	cmake_generator = "Unix Makefiles"
+    	else
+    	CMAKE = $(BL_SDK_BASE)/tools/cmake/bin/cmake
+    	BL_FLASH_PROGRAM = ${BL_SDK_BASE}/tools/bflb_tools/bouffalo_flash_cube/BLFlashCommand-ubuntu
+    	cmake_generator = "Unix Makefiles"
+    	endif
+
+    
+
+	
 Replace it with this:
 
-`
-ifeq ($(OS),Windows_NT)
-CMAKE = $(BL_SDK_BASE)/tools/cmake/bin/cmake.exe
-cmake_generator = "MinGW Makefiles"
-else
-CMAKE = /opt/homebrew/bin/cmake
-BL_FLASH_PROGRAM = ${BL_SDK_BASE}/tools/bflb_tools/bouffalo_flash_cube/BLFlashCommand-macos
-cmake_generator = "Unix Makefiles"
-endif
-`
 
-### GNU coreutils
-
-The build requires some of the GNU coreutils and not the BSD equivalents that come with macOS.
+    ifeq ($(OS),Windows_NT)
+    CMAKE = $(BL_SDK_BASE)/tools/cmake/bin/cmake.exe
+    cmake_generator = "MinGW Makefiles"
+    else
+    CMAKE = /opt/homebrew/bin/cmake
+    BL_FLASH_PROGRAM = ${BL_SDK_BASE}/tools/bflb_tools/bouffalo_flash_cube/BLFlashCommand-macos
+    cmake_generator = "Unix Makefiles"
+    endif
 
 
-`$ brew install coreutils`
+### Patch bflb_flash.cmake
+
+Find the bflb_flash.cmake file in the same SDK folder and replace this line
+`set(TOOL_SUFFIX "-ubuntu")`
+For this line:
+`set(TOOL_SUFFIX "-macos")`
+
+
+### Compile
+Now, you can compile in the Apple M1 like this:
+`make CHIP=bl616 BOARD=bl616dk`
+`make flash CHIP=bl616 BOARD=bl616dk COMX=/dev/tty.xyz`
+
+Enjoy!
 
