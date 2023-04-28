@@ -18,7 +18,6 @@ The toolchain is at least 80% of the work, but you also need to patch the SDK wi
 ### Patch project.build
 Open the file "project.build" from the sdk and look for this code
 
-    <?php
         ifeq ($(OS),Windows_NT)
         CMAKE = $(BL_SDK_BASE)/tools/cmake/bin/cmake.exe
         BL_FLASH_PROGRAM = ${BL_SDK_BASE}/tools/bflb_tools/bouffalo_flash_cube/BLFlashCommand.exe
@@ -54,7 +53,7 @@ Replace it with this:
 
 Find the bflb_flash.cmake file in the same SDK folder and replace this line
 `set(TOOL_SUFFIX "-ubuntu")`
-For this line:
+For this line (this is a lazy fix!):
 `set(TOOL_SUFFIX "-macos")`
 
 
